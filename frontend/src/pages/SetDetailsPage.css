@@ -1,0 +1,112 @@
+.set-details-page {
+  padding: var(--spacing-2xl) 0;
+  min-height: calc(100vh - 80px);
+}
+
+.back-button {
+  margin-bottom: var(--spacing-lg);
+}
+
+.set-header {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.set-info {
+  margin-bottom: var(--spacing-xl);
+}
+
+.set-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.set-description {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.set-meta {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.cards-section {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.section-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.error-container h2 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.error-container p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+
+  .set-meta {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+}
