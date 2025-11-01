@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from sqlalchemy import func
 from app.database import get_db
 from app.models import Set as SetModel, Card as CardModel
 from app.schemas import Set, SetCreate, SetListItem
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api", tags=["sets"])
 
@@ -17,7 +17,7 @@ async def get_sets(db: Session = Depends(get_db)):
         SetModel.description,
         SetModel.created_at,
         func.count(CardModel.id).label("card_count")
-    ).outerjoin(CardModel).group_by(SetModel.id).order_by(SetModel.created_at.desc()).all()
+    ).outerjoin(CardModel).group_by(SetModel.id).order_by(SetModel.id.desc()).all()  # Zmiana tutaj!
 
     return [
         SetListItem(
