@@ -56,3 +56,17 @@ async def create_set(set_data: SetCreate, db: Session = Depends(get_db)):
     db.refresh(new_set)
 
     return new_set
+
+
+@router.get("/sets/{set_id}", response_model=Set)
+async def get_set(set_id: int, db: Session = Depends(get_db)):
+    """Get a specific set with all its cards"""
+    set_obj = db.query(SetModel).filter(SetModel.id == set_id).first()
+
+    if not set_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Set with id {set_id} not found"
+        )
+
+    return set_obj
