@@ -83,15 +83,18 @@ def test_get_sets_list(client):
         ]
     }
 
-    client.post("/api/sets", json=set_data_1)
-    client.post("/api/sets", json=set_data_2)
+    response_1 = client.post("/api/sets", json=set_data_1)
+    response_2 = client.post("/api/sets", json=set_data_2)
 
     response = client.get("/api/sets")
     assert response.status_code == 200
 
     data = response.json()
     assert len(data) == 2
-    assert data[0]["card_count"] == 2  # Newest first
+    # Sets are ordered by created_at DESC, so Set 2 (newer) comes first
+    assert data[0]["title"] == "Set 2"
+    assert data[0]["card_count"] == 2
+    assert data[1]["title"] == "Set 1"
     assert data[1]["card_count"] == 1
 
 
