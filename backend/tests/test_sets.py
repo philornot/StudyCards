@@ -82,3 +82,149 @@ def test_get_set_with_many_cards(client):
     for i, card in enumerate(data["cards"]):
         assert card["term"] == f"Term {i}"
         assert card["order"] == i
+
+
+def test_update_set_title_and_description(client):
+    """Test updating set title and description"""
+    # Create initial set
+    set_data = {
+        "title": "Original Title",
+        "description": "Original description",
+        "cards": [{"term": "A", "definition": "B", "order": 0}]
+    }
+    create_response = client.post("/api/sets", json=set_data)
+    set_id = create_response.json()["id"]
+
+    # Update set
+    updated_data = {
+        "title": "Updated Title",
+        "description": "Updated description",
+        "cards": [{"term": "A", "definition": "B", "order": 0}]
+    }
+    response = client.put(f"/api/sets/{set_id}", json=updated_data)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["title"] == "Updated Title"
+    assert data["description"] == "Updated description"
+
+
+def test_update_set_add_cards(client):
+    """Test adding new cards to existing set"""
+    # Create set with 1 card
+    set_data = {
+        "title": "Test Set",
+        "cards": [{"term": "Card 1", "definition": "Def 1", "order": 0}]
+    }
+    create_response = client.post("/api/sets", json=set_data)
+    set_id = create_response.json()["id"]
+
+    # Update with 3 cards
+    updated_data = {
+        "title": "Test Set",
+        "cards": [
+            {"term": "Card 1", "definition": "Def 1", "order": 0},
+            {"term": "Card 2", "definition": "Def 2", "order": 1},
+            {"term": "Card 3", "definition": "Def 3", "order": 2}
+        ]
+    }
+    response = client.put(f"/api/sets/{set_id}", json=updated_data)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["cards"]) == 3
+
+
+def test_update_set_remove_cards(client):
+    """Test removing cards from set"""
+    # Create set with 3 cards
+    set_data = {
+        "title": "Test Set",
+        "cards": [
+            {"term": "Card 1", "definition": "Def 1", "order": 0},
+            {"term": "Card 2", "definition": "Def 2", "order": 1},
+            {"term": "Card 3", "definition": "Def 3", "order": 2}
+        ]
+    }
+    create_response = client.post("/api/sets", json=set_data)
+    set_id = create_response.json()["id"]
+
+    # Update with only 1 card
+    updated_data = {
+        "title": "Test Set",
+        "cards": [{"term": "Card 1", "definition": "Def 1", "order": 0}]
+    }
+    response = client.put(f"/api/sets/{set_id}", json=updated_data)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["cards"]) == 1
+
+
+def test_update_set_change_card_order(client):
+    """Test changing order of cards"""
+    # Create set
+    set_data = {
+        "title": "Test Set",
+        "cards": [
+            {"term": "First", "definition": "1", "order": 0},
+            {"term": "Second", "definition": "2", "order": 1},
+            {"term": "Third", "definition": "3", "order": 2}
+        ]
+    }
+    create_response = client.post("/api/sets", json=set_data)
+    set_id = create_response.json()["id"]
+
+    # Update with reversed order
+    updated_data = {
+        "title": "Test Set",
+        "cards": [
+            {"term": "Third", "definition": "3", "order": 0},
+            {"term": "Second", "definition": "2", "order": 1},
+            {"term": "First", "definition": "1", "order": 2}
+        ]
+    }
+    response = client.put(f"/api/sets/{set_id}", json=updated_data)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["cards"][0]["term"] == "Third"
+    assert data["cards"][1]["term"] == "Second"
+    assert data["cards"][2]["term"] == "First"
+
+
+def test_update_set_validation(client):
+    """Test validation when updating set"""
+    # Create set
+    set_data = {
+        "title": "Test Set",
+        "cards": [{"term": "A", "definition": "B", "order": 0}]
+    }
+    create_response = client.post("/api/sets", json=set_data)
+    set_id = create_response.json()["id"]
+
+    # Try to update with invalid data (empty title)
+    invalid_data = {
+        "title": "",
+        "cards": [{"term": "A", "definition": "B", "order": 0}]
+    }
+    response = client.put(f"/api/sets/{set_id}", json=invalid_data)
+    assert response.status_code == 422
+
+    # Try to update with no cards
+    invalid_data = {
+        "title": "Test",
+        "cards": []
+    }
+    response = client.put(f"/api/sets/{set_id}", json=invalid_data)
+    assert response.status_code == 422
+
+
+def test_update_nonexistent_set(client):
+    """Test updating a set that doesn't exist"""
+    updated_data = {
+        "title": "Test",
+        "cards": [{"term": "A", "definition": "B", "order": 0}]
+    }
+    response = client.put("/api/sets/999", json=updated_data)
+    assert response.status_code == 404
