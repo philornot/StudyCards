@@ -1,9 +1,9 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.database import get_db
 from app.models import Set as SetModel, Card as CardModel
 from app.schemas import Set, SetCreate, SetListItem
-from fastapi import APIRouter, Depends, status
-from sqlalchemy import func
-from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api", tags=["sets"])
 
@@ -42,13 +42,13 @@ async def create_set(set_data: SetCreate, db: Session = Depends(get_db)):
     db.add(new_set)
     db.flush()  # Get the ID without committing
 
-    # Create cards
+    # Create cards with proper ordering
     for idx, card_data in enumerate(set_data.cards):
         card = CardModel(
             set_id=new_set.id,
             term=card_data.term,
             definition=card_data.definition,
-            order=card_data.order if card_data.order > 0 else idx
+            order=card_data.order if card_data.order >= 0 else idx
         )
         db.add(card)
 

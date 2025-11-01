@@ -13,7 +13,12 @@ class Set(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    cards = relationship("Card", back_populates="set", cascade="all, delete-orphan")
+    cards = relationship(
+        "Card",
+        back_populates="set",
+        cascade="all, delete-orphan",
+        order_by="Card.order"
+    )
 
 
 class Card(Base):

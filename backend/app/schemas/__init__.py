@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 from typing import Optional
 
@@ -17,8 +17,7 @@ class Card(CardBase):
     id: int
     set_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SetBase(BaseModel):
@@ -27,7 +26,7 @@ class SetBase(BaseModel):
 
 
 class SetCreate(SetBase):
-    cards: list[CardCreate] = Field(..., min_items=1)
+    cards: list[CardCreate] = Field(..., min_length=1)
 
 
 class SetListItem(SetBase):
@@ -35,15 +34,13 @@ class SetListItem(SetBase):
     card_count: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Set(SetBase):
     id: int
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: Optional[datetime] = None
     cards: list[Card]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
