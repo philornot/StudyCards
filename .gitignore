@@ -1,6 +1,7 @@
 /backend/.venv
 /backend/studycards.db
 /backend/test.db
+/backend/tests/test.db
 
 # Logs
 /frontend/logs
