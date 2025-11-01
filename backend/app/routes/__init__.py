@@ -17,7 +17,7 @@ async def get_sets(db: Session = Depends(get_db)):
         SetModel.description,
         SetModel.created_at,
         func.count(CardModel.id).label("card_count")
-    ).outerjoin(CardModel).group_by(SetModel.id).order_by(SetModel.id.desc()).all()  # Zmiana tutaj!
+    ).outerjoin(CardModel).group_by(SetModel.id).order_by(SetModel.id.desc()).all()
 
     return [
         SetListItem(
@@ -34,15 +34,13 @@ async def get_sets(db: Session = Depends(get_db)):
 @router.post("/sets", response_model=Set, status_code=status.HTTP_201_CREATED)
 async def create_set(set_data: SetCreate, db: Session = Depends(get_db)):
     """Create a new set with cards"""
-    # Create set
     new_set = SetModel(
         title=set_data.title,
         description=set_data.description
     )
     db.add(new_set)
-    db.flush()  # Get the ID without committing
+    db.flush()
 
-    # Create cards with proper ordering
     for idx, card_data in enumerate(set_data.cards):
         card = CardModel(
             set_id=new_set.id,
@@ -68,5 +66,40 @@ async def get_set(set_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Set with id {set_id} not found"
         )
+
+    return set_obj
+
+
+@router.put("/sets/{set_id}", response_model=Set)
+async def update_set(set_id: int, set_data: SetCreate, db: Session = Depends(get_db)):
+    """Update an existing set with cards"""
+    # Check if set exists
+    set_obj = db.query(SetModel).filter(SetModel.id == set_id).first()
+
+    if not set_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Set with id {set_id} not found"
+        )
+
+    # Update set fields
+    set_obj.title = set_data.title
+    set_obj.description = set_data.description
+
+    # Delete all existing cards (cascade will handle this)
+    db.query(CardModel).filter(CardModel.set_id == set_id).delete()
+
+    # Add new cards
+    for idx, card_data in enumerate(set_data.cards):
+        card = CardModel(
+            set_id=set_id,
+            term=card_data.term,
+            definition=card_data.definition,
+            order=card_data.order if card_data.order >= 0 else idx
+        )
+        db.add(card)
+
+    db.commit()
+    db.refresh(set_obj)
 
     return set_obj
