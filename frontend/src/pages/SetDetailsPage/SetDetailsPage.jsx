@@ -140,7 +140,7 @@ const SetDetailsPage = () => {
             ← Powrót
           </Button>
 
-            <ProgressDashboard setId={id} />
+          <ProgressDashboard setId={id} />
 
           <div className="set-header">
             <div className="set-info">
@@ -211,7 +211,12 @@ const SetDetailsPage = () => {
             <h2 className="section-title">Fiszki w zestawie</h2>
             <div className="cards-list">
               {set.cards.map((card, index) => (
-                <CardListItem key={card.id} card={card} index={index} />
+                <CardListItem
+                  key={card.id}
+                  card={card}
+                  index={index}
+                  showProgress={true}
+                />
               ))}
             </div>
           </div>
