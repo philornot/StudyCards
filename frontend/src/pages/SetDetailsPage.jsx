@@ -18,9 +18,12 @@ const SetDetailsPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [toast, setToast] = useState(null);
+  const [srStats, setSrStats] = useState(null);
+  const [loadingSrStats, setLoadingSrStats] = useState(false);
 
   useEffect(() => {
     fetchSet();
+    fetchSrStats();
   }, [id]);
 
   const fetchSet = async () => {
@@ -38,6 +41,19 @@ const SetDetailsPage = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSrStats = async () => {
+    try {
+      setLoadingSrStats(true);
+      const response = await setsApi.getSpacedRepetitionCards(id);
+      setSrStats(response.data.stats);
+    } catch (err) {
+      console.error('Error fetching SR stats:', err);
+      setSrStats(null);
+    } finally {
+      setLoadingSrStats(false);
     }
   };
 
@@ -101,6 +117,9 @@ const SetDetailsPage = () => {
     return null;
   }
 
+  const dueCount = srStats ? srStats.total_cards : 0;
+  const hasCardsToStudy = dueCount > 0;
+
   return (
     <>
       <Navbar />
@@ -134,16 +153,30 @@ const SetDetailsPage = () => {
             <div className="action-buttons">
               <Button
                 size="large"
-                onClick={() => navigate(`/sets/${id}/flashcards`)}
+                onClick={() => navigate(`/sets/${id}/study`)}
+                disabled={!hasCardsToStudy && !loadingSrStats}
+                title={hasCardsToStudy ? `${dueCount} fiszek do nauki` : 'Brak fiszek do nauki dzisiaj'}
               >
-                🎴 Ucz się (Fiszki)
+                🧠 Rozpocznij naukę
+                {!loadingSrStats && dueCount > 0 && (
+                  <span style={{
+                    marginLeft: 'var(--spacing-xs)',
+                    padding: '2px 8px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 'var(--radius-full)',
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-bold)'
+                  }}>
+                    {dueCount}
+                  </span>
+                )}
               </Button>
               <Button
                 size="large"
-                disabled
-                title="Dostępne wkrótce"
+                variant="secondary"
+                onClick={() => navigate(`/sets/${id}/flashcards`)}
               >
-                🧠 Ucz się (Spaced Repetition)
+                🎴 Tryb fiszek
               </Button>
               <Button
                 variant="outline"
