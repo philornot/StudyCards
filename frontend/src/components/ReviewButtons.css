@@ -81,7 +81,7 @@
 }
 
 .review-button-key {
-  font-size: var(--font-size-xs); /* TODO: fix "Cannot resolve '--font-size-xs' custom property" */
+  font-size: var(--font-size-xs);
   opacity: 0.6;
   margin-top: var(--spacing-xs);
 }

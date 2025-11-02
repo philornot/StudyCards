@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Button from '../components/ui/Button';
-import CardListItem from '../components/CardListItem';
-import LoadingSpinner from '../components/LoadingSpinner';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import Toast from '../components/ui/Toast';
-import { setsApi } from '../services/api';
-import './SetDetailsPage.css';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Button from "../components/ui/Button";
+import CardListItem from "../components/CardListItem";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import Toast from "../components/ui/Toast";
+import { setsApi } from "../services/api";
+import "./SetDetailsPage.css";
 
 const SetDetailsPage = () => {
   const { id } = useParams();
@@ -33,11 +33,11 @@ const SetDetailsPage = () => {
       const response = await setsApi.getById(id);
       setSet(response.data);
     } catch (err) {
-      console.error('Error fetching set:', err);
+      console.error("Error fetching set:", err);
       if (err.response?.status === 404) {
-        setError('Zestaw nie został znaleziony.');
+        setError("Zestaw nie został znaleziony.");
       } else {
-        setError('Nie udało się załadować zestawu. Spróbuj ponownie.');
+        setError("Nie udało się załadować zestawu. Spróbuj ponownie.");
       }
     } finally {
       setLoading(false);
@@ -50,7 +50,7 @@ const SetDetailsPage = () => {
       const response = await setsApi.getSpacedRepetitionCards(id);
       setSrStats(response.data.stats);
     } catch (err) {
-      console.error('Error fetching SR stats:', err);
+      console.error("Error fetching SR stats:", err);
       setSrStats(null);
     } finally {
       setLoadingSrStats(false);
@@ -62,16 +62,19 @@ const SetDetailsPage = () => {
       setDeleting(true);
       await setsApi.delete(id);
       setShowDeleteModal(false);
-      setToast({ type: 'success', message: 'Zestaw został pomyślnie usunięty' });
+      setToast({
+        type: "success",
+        message: "Zestaw został pomyślnie usunięty",
+      });
       setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 1500);
     } catch (err) {
-      console.error('Error deleting set:', err);
+      console.error("Error deleting set:", err);
       setShowDeleteModal(false);
       setToast({
-        type: 'error',
-        message: 'Nie udało się usunąć zestawu. Spróbuj ponownie.'
+        type: "error",
+        message: "Nie udało się usunąć zestawu. Spróbuj ponownie.",
       });
     } finally {
       setDeleting(false);
@@ -80,12 +83,12 @@ const SetDetailsPage = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('pl-PL', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("pl-PL", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -106,7 +109,9 @@ const SetDetailsPage = () => {
           <div className="error-container">
             <h2>Błąd</h2>
             <p>{error}</p>
-            <Button onClick={() => navigate('/')}>Wróć do strony głównej</Button>
+            <Button onClick={() => navigate("/")}>
+              Wróć do strony głównej
+            </Button>
           </div>
         </div>
       </>
@@ -118,7 +123,7 @@ const SetDetailsPage = () => {
   }
 
   const dueCount = srStats ? srStats.total_cards : 0;
-  const hasCardsToStudy = dueCount > 0;
+  const hasCardsToStudy = !loadingSrStats && (srStats === null || dueCount > 0);
 
   return (
     <>
@@ -128,7 +133,7 @@ const SetDetailsPage = () => {
           <Button
             variant="outline"
             size="small"
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="back-button"
           >
             ← Powrót
@@ -142,7 +147,8 @@ const SetDetailsPage = () => {
               )}
               <div className="set-meta">
                 <span className="meta-item">
-                  📚 {set.cards.length} {set.cards.length === 1 ? 'fiszka' : 'fiszek'}
+                  📚 {set.cards.length}{" "}
+                  {set.cards.length === 1 ? "fiszka" : "fiszek"}
                 </span>
                 <span className="meta-item">
                   📅 Utworzono: {formatDate(set.created_at)}
@@ -154,19 +160,27 @@ const SetDetailsPage = () => {
               <Button
                 size="large"
                 onClick={() => navigate(`/sets/${id}/study`)}
-                disabled={!hasCardsToStudy && !loadingSrStats}
-                title={hasCardsToStudy ? `${dueCount} fiszek do nauki` : 'Brak fiszek do nauki dzisiaj'}
+                disabled={loadingSrStats}
+                title={
+                  loadingSrStats
+                    ? "Ładowanie..."
+                    : dueCount > 0
+                    ? `${dueCount} fiszek do nauki`
+                    : "Rozpocznij naukę"
+                }
               >
                 🧠 Rozpocznij naukę
                 {!loadingSrStats && dueCount > 0 && (
-                  <span style={{
-                    marginLeft: 'var(--spacing-xs)',
-                    padding: '2px 8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                    borderRadius: 'var(--radius-full)',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-bold)'
-                  }}>
+                  <span
+                    style={{
+                      marginLeft: "var(--spacing-xs)",
+                      padding: "2px 8px",
+                      backgroundColor: "rgba(255, 255, 255, 0.3)",
+                      borderRadius: "var(--radius-full)",
+                      fontSize: "var(--font-size-sm)",
+                      fontWeight: "var(--font-weight-bold)",
+                    }}
+                  >
                     {dueCount}
                   </span>
                 )}
@@ -184,10 +198,7 @@ const SetDetailsPage = () => {
               >
                 ✏️ Edytuj
               </Button>
-              <Button
-                variant="danger"
-                onClick={() => setShowDeleteModal(true)}
-              >
+              <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
                 🗑️ Usuń
               </Button>
             </div>
@@ -197,11 +208,7 @@ const SetDetailsPage = () => {
             <h2 className="section-title">Fiszki w zestawie</h2>
             <div className="cards-list">
               {set.cards.map((card, index) => (
-                <CardListItem
-                  key={card.id}
-                  card={card}
-                  index={index}
-                />
+                <CardListItem key={card.id} card={card} index={index} />
               ))}
             </div>
           </div>
