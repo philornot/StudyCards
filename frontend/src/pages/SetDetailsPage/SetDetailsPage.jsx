@@ -5,21 +5,21 @@ import Button from "../../components/ui/Button.jsx";
 import CardListItem from "../../components/cards/CardListItem.jsx";
 import LoadingSpinner from "../../components/shared/LoadingSpinner.jsx";
 import ConfirmDeleteModal from "../../components/shared/ConfirmDeleteModal.jsx";
-import Toast from "../../components/ui/Toast.jsx";
+import ConfirmResetModal from "../../components/shared/ConfirmResetModal.jsx";
 import ProgressDashboard from "../../components/stats/ProgressDashboard.jsx";
+import { useToast } from "../../contexts/ToastContext.jsx";
 import { setsApi } from "../../services/api.js";
 import "./SetDetailsPage.css";
-import ConfirmResetModal from "../../components/shared/ConfirmResetModal.jsx";
 
 const SetDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { success, error: showError } = useToast();
   const [set, setSet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [toast, setToast] = useState(null);
   const [srStats, setSrStats] = useState(null);
   const [loadingSrStats, setLoadingSrStats] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
@@ -66,20 +66,14 @@ const SetDetailsPage = () => {
       setDeleting(true);
       await setsApi.delete(id);
       setShowDeleteModal(false);
-      setToast({
-        type: "success",
-        message: "Zestaw został pomyślnie usunięty",
-      });
+      success("Zestaw został pomyślnie usunięty");
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (err) {
       console.error("Error deleting set:", err);
       setShowDeleteModal(false);
-      setToast({
-        type: "error",
-        message: "Nie udało się usunąć zestawu. Spróbuj ponownie.",
-      });
+      showError("Nie udało się usunąć zestawu. Spróbuj ponownie.");
     } finally {
       setDeleting(false);
     }
@@ -90,23 +84,16 @@ const SetDetailsPage = () => {
       setResetting(true);
       await setsApi.resetProgress(id);
       setShowResetModal(false);
-      setToast({
-        type: "success",
-        message: "Postęp został zresetowany",
-      });
-      // Refresh stats and set data
+      success("Postęp został zresetowany");
       setTimeout(() => {
         fetchSet();
         fetchSrStats();
-        window.location.reload(); // Force refresh to update ProgressDashboard
+        window.location.reload();
       }, 1000);
     } catch (err) {
       console.error("Error resetting progress:", err);
       setShowResetModal(false);
-      setToast({
-        type: "error",
-        message: "Nie udało się zresetować postępu. Spróbuj ponownie.",
-      });
+      showError("Nie udało się zresetować postępu. Spróbuj ponownie.");
     } finally {
       setResetting(false);
     }
@@ -154,7 +141,6 @@ const SetDetailsPage = () => {
   }
 
   const dueCount = srStats ? srStats.total_cards : 0;
-  const hasCardsToStudy = !loadingSrStats && (srStats === null || dueCount > 0);
 
   return (
     <>
@@ -274,16 +260,6 @@ const SetDetailsPage = () => {
         onConfirm={handleResetProgress}
         loading={resetting}
       />
-
-      {toast && (
-        <div className="toast-container">
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
-        </div>
-      )}
     </>
   );
 };

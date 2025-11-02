@@ -3,22 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar.jsx';
 import SetCard from '../../components/cards/SetCard.jsx';
 import EmptyState from '../../components/shared/EmptyState.jsx';
-import LoadingSpinner from '../../components/shared/LoadingSpinner.jsx';
+import { SkeletonGrid } from '../../components/shared/SkeletonLoader.jsx';
 import ConfirmDeleteModal from '../../components/shared/ConfirmDeleteModal.jsx';
-import Toast from '../../components/ui/Toast.jsx';
 import Button from '../../components/ui/Button.jsx';
+import { useToast } from '../../contexts/ToastContext.jsx';
 import { setsApi } from '../../services/api.js';
 import './HomePage.css';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const { success, error: showError } = useToast();
   const [sets, setSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [setToDelete, setSetToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     fetchSets();
@@ -55,17 +55,11 @@ const HomePage = () => {
 
       setShowDeleteModal(false);
       setSetToDelete(null);
-      setToast({
-        type: 'success',
-        message: `Zestaw "${setToDelete.title}" został usunięty`
-      });
+      success(`Zestaw "${setToDelete.title}" został usunięty`);
     } catch (err) {
       console.error('Error deleting set:', err);
       setShowDeleteModal(false);
-      setToast({
-        type: 'error',
-        message: 'Nie udało się usunąć zestawu. Spróbuj ponownie.'
-      });
+      showError('Nie udało się usunąć zestawu. Spróbuj ponownie.');
     } finally {
       setDeleting(false);
     }
@@ -82,7 +76,17 @@ const HomePage = () => {
     return (
       <>
         <Navbar />
-        <LoadingSpinner size="large" />
+        <div className="home-page">
+          <div className="container">
+            <div className="home-header">
+              <div>
+                <h1 className="home-title">Moje zestawy</h1>
+                <p className="home-subtitle">Ładowanie...</p>
+              </div>
+            </div>
+            <SkeletonGrid count={6} />
+          </div>
+        </div>
       </>
     );
   }
@@ -144,16 +148,6 @@ const HomePage = () => {
           itemName={setToDelete.title}
           loading={deleting}
         />
-      )}
-
-      {toast && (
-        <div className="toast-container">
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
-        </div>
       )}
     </>
   );
