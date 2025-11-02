@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Flashcard from '../components/Flashcard';
 import ReviewButtons from '../components/ReviewButtons';
+import StudySessionSummary from '../components/StudySessionSummary';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { setsApi, studyApi } from '../services/api';
@@ -20,9 +21,18 @@ const StudyPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [flipTrigger, setFlipTrigger] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [sessionComplete, setSessionComplete] = useState(false);
+  const [reviewStats, setReviewStats] = useState({
+    again: 0,
+    hard: 0,
+    good: 0,
+    easy: 0
+  });
+  const [sessionStartTime, setSessionStartTime] = useState(null);
 
   useEffect(() => {
     fetchStudySession();
+    setSessionStartTime(Date.now());
   }, [id]);
 
   useEffect(() => {
@@ -30,6 +40,8 @@ const StudyPage = () => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
         return;
       }
+
+      if (sessionComplete) return;
 
       switch (e.key) {
         case ' ':
@@ -65,7 +77,7 @@ const StudyPage = () => {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isFlipped, currentIndex, submitting]);
+  }, [isFlipped, currentIndex, submitting, sessionComplete]);
 
   const fetchStudySession = async () => {
     try {
@@ -80,6 +92,7 @@ const StudyPage = () => {
       setStats(studyResponse.data.stats);
       setCurrentIndex(0);
       setIsFlipped(false);
+      setSessionComplete(false);
     } catch (err) {
       console.error('Error fetching study session:', err);
       if (err.response?.status === 404) {
@@ -104,14 +117,20 @@ const StudyPage = () => {
       const currentCard = cards[currentIndex];
       await studyApi.submitReview(currentCard.id, quality);
 
+      // Update stats
+      setReviewStats(prev => ({
+        ...prev,
+        [quality]: prev[quality] + 1
+      }));
+
       // Move to next card with animation
       setTimeout(() => {
         if (currentIndex < cards.length - 1) {
           setCurrentIndex(currentIndex + 1);
           setIsFlipped(false);
         } else {
-          // No more cards - refresh to check for new ones
-          fetchStudySession();
+          // Session complete
+          setSessionComplete(true);
         }
         setSubmitting(false);
       }, 300);
@@ -120,6 +139,18 @@ const StudyPage = () => {
       setSubmitting(false);
       alert('Nie udało się zapisać oceny. Spróbuj ponownie.');
     }
+  };
+
+  const handleContinue = () => {
+    // Reset stats and fetch new session
+    setReviewStats({
+      again: 0,
+      hard: 0,
+      good: 0,
+      easy: 0
+    });
+    setSessionStartTime(Date.now());
+    fetchStudySession();
   };
 
   const handleExit = () => {
@@ -144,6 +175,28 @@ const StudyPage = () => {
             <h2>Błąd</h2>
             <p>{error}</p>
             <Button onClick={() => navigate('/')}>Wróć do strony głównej</Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (sessionComplete) {
+    const duration = sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000) : null;
+    const totalReviewed = reviewStats.again + reviewStats.hard + reviewStats.good + reviewStats.easy;
+
+    return (
+      <>
+        <Navbar />
+        <div className="study-page">
+          <div className="container">
+            <StudySessionSummary
+              reviewedCount={totalReviewed}
+              qualityBreakdown={reviewStats}
+              duration={duration}
+              onContinue={handleContinue}
+              onExit={handleExit}
+            />
           </div>
         </div>
       </>
