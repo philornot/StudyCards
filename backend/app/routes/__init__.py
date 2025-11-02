@@ -66,9 +66,9 @@ async def create_set(set_data: SetCreate, db: Session = Depends(get_db)):
 
 @router.get("/sets/{set_id}", response_model=Set)
 async def get_set(set_id: int, db: Session = Depends(get_db)):
-    """Get a specific set with all its cards"""
+    """Get a specific set with all its cards and their progress"""
     set_obj = db.query(SetModel).options(
-        joinedload(SetModel.cards)
+        joinedload(SetModel.cards).joinedload(CardModel.progress)
     ).filter(SetModel.id == set_id).first()
 
     if not set_obj:
