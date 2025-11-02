@@ -88,3 +88,16 @@ class Set(SetBase):
     cards: list[Card]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class SetStats(BaseModel):
+    total_cards: int
+    new_cards: int
+    learning_cards: int
+    mature_cards: int
+    average_ease_factor: float
+    reviews_today: int
+    reviews_this_week: int
+    reviews_total: int
+    current_streak: int
+    accuracy: float

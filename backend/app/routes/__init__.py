@@ -3,13 +3,13 @@ from app.models import Set as SetModel, Card as CardModel, CardProgress, ReviewQ
 from app.schemas import (
     Set, SetCreate, SetListItem, Card,
     StudySessionResponse, CardWithProgress, StudySessionStats,
-    ReviewInput, CardProgressResponse
+    ReviewInput, CardProgressResponse, SetStats
 )
 from app.services import SpacedRepetitionService
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import random
 
 router = APIRouter(prefix="/api", tags=["sets"])
@@ -282,3 +282,120 @@ async def submit_review(review: ReviewInput, db: Session = Depends(get_db)):
     db.refresh(updated_progress)
 
     return updated_progress
+
+
+@router.get("/sets/{set_id}/stats", response_model=SetStats)
+async def get_set_stats(set_id: int, db: Session = Depends(get_db)):
+    """
+    Get learning statistics for a set.
+    """
+    # Check if set exists
+    set_obj = db.query(SetModel).filter(SetModel.id == set_id).first()
+
+    if not set_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Set with id {set_id} not found"
+        )
+
+    # Get all cards with progress
+    cards = db.query(CardModel).filter(CardModel.set_id == set_id).all()
+    total_cards = len(cards)
+
+    if total_cards == 0:
+        return SetStats(
+            total_cards=0,
+            new_cards=0,
+            learning_cards=0,
+            mature_cards=0,
+            average_ease_factor=0.0,
+            reviews_today=0,
+            reviews_this_week=0,
+            reviews_total=0,
+            current_streak=0,
+            accuracy=0.0
+        )
+
+    # Categorize cards by status
+    new_cards = 0
+    learning_cards = 0
+    mature_cards = 0
+    ease_factors = []
+
+    for card in cards:
+        if card.progress:
+            status = SpacedRepetitionService.get_card_status(card.progress)
+            ease_factors.append(card.progress.ease_factor)
+
+            if status == 'new':
+                new_cards += 1
+            elif status == 'learning':
+                learning_cards += 1
+            else:  # mature
+                mature_cards += 1
+        else:
+            new_cards += 1
+
+    # Calculate average ease factor
+    avg_ease_factor = sum(ease_factors) / len(ease_factors) if ease_factors else 2.5
+
+    # Calculate review counts
+    today = datetime.now().date()
+    week_ago = today - timedelta(days=7)
+
+    reviews_today = 0
+    reviews_this_week = 0
+    reviews_total = 0
+
+    good_reviews = 0  # Good + Easy
+    total_reviews = 0
+
+    for card in cards:
+        if card.progress and card.progress.last_reviewed:
+            reviews_total += card.progress.repetitions
+            review_date = card.progress.last_reviewed.date()
+
+            if review_date == today:
+                reviews_today += 1
+            if review_date >= week_ago:
+                reviews_this_week += 1
+
+            # Calculate accuracy (Good/Easy vs Again/Hard)
+            # We approximate: if repetitions > lapses, it's mostly good
+            total_reviews += card.progress.repetitions + card.progress.lapses
+            good_reviews += card.progress.repetitions
+
+    # Calculate accuracy
+    accuracy = (good_reviews / total_reviews * 100) if total_reviews > 0 else 0.0
+
+    # Calculate streak (consecutive days with reviews)
+    # This is simplified - we check if there were reviews in recent days
+    current_streak = 0
+    check_date = today
+
+    for i in range(365):  # Check up to a year back
+        day_has_review = False
+        for card in cards:
+            if card.progress and card.progress.last_reviewed:
+                if card.progress.last_reviewed.date() == check_date:
+                    day_has_review = True
+                    break
+
+        if day_has_review:
+            current_streak += 1
+            check_date -= timedelta(days=1)
+        else:
+            break
+
+    return SetStats(
+        total_cards=total_cards,
+        new_cards=new_cards,
+        learning_cards=learning_cards,
+        mature_cards=mature_cards,
+        average_ease_factor=round(avg_ease_factor, 2),
+        reviews_today=reviews_today,
+        reviews_this_week=reviews_this_week,
+        reviews_total=reviews_total,
+        current_streak=current_streak,
+        accuracy=round(accuracy, 1)
+    )
