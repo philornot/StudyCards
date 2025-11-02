@@ -43,8 +43,6 @@
 
 @media (max-width: 768px) {
   .keyboard-hints {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
+    display: none;
   }
 }
