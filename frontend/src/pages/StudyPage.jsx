@@ -8,6 +8,7 @@ import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { setsApi, studyApi } from '../services/api';
 import './StudyPage.css';
+import KeyboardHints from '../components/KeyboardHints';
 
 const StudyPage = () => {
   const { id } = useParams();
@@ -51,18 +52,26 @@ const StudyPage = () => {
           }
           break;
         case '1':
+        case 'z':
+        case 'Z':
           e.preventDefault();
           if (isFlipped) handleReview('again');
           break;
         case '2':
+        case 'x':
+        case 'X':
           e.preventDefault();
           if (isFlipped) handleReview('hard');
           break;
         case '3':
+        case 'c':
+        case 'C':
           e.preventDefault();
           if (isFlipped) handleReview('good');
           break;
         case '4':
+        case 'v':
+        case 'V':
           e.preventDefault();
           if (isFlipped) handleReview('easy');
           break;
@@ -307,14 +316,7 @@ const StudyPage = () => {
               </div>
             )}
 
-            <div style={{
-              textAlign: 'center',
-              marginTop: 'var(--spacing-lg)',
-              color: 'var(--color-text-muted)',
-              fontSize: 'var(--font-size-sm)'
-            }}>
-              Klawisze: <strong>Spacja</strong> - odwróć | <strong>1-4</strong> - oceń | <strong>Esc</strong> - wyjdź
-            </div>
+            <KeyboardHints isFlipped={isFlipped} />
           </div>
         </div>
       </div>

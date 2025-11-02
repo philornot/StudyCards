@@ -5,28 +5,28 @@ const ReviewButtons = ({ onReview, disabled = false, intervals = null }) => {
     {
       quality: 'again',
       label: 'Again',
-      key: '1',
+      keys: ['1', 'Z'],
       className: 'review-button-again',
       title: 'Zupełnie nie pamiętam - zacznij od nowa'
     },
     {
       quality: 'hard',
       label: 'Hard',
-      key: '2',
+      keys: ['2', 'X'],
       className: 'review-button-hard',
       title: 'Trudne - pamiętam z trudem'
     },
     {
       quality: 'good',
       label: 'Good',
-      key: '3',
+      keys: ['3', 'C'],
       className: 'review-button-good',
       title: 'Dobrze - pamiętam po chwili zastanowienia'
     },
     {
       quality: 'easy',
       label: 'Easy',
-      key: '4',
+      keys: ['4', 'V'],
       className: 'review-button-easy',
       title: 'Łatwo - pamiętam od razu'
     }
@@ -73,7 +73,9 @@ const ReviewButtons = ({ onReview, disabled = false, intervals = null }) => {
               {formatInterval(button.quality)}
             </span>
           </div>
-          <span className="review-button-key">{button.key}</span>
+          <span className="review-button-key">
+            {button.keys.join(' / ')}
+          </span>
         </button>
       ))}
     </div>
