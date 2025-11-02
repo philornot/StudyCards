@@ -28,3 +28,6 @@
 /frontend/*.sln
 /frontend/*.sw?
 /backend/.env
+
+# Local Netlify folder
+.netlify
