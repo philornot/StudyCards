@@ -1,9 +1,11 @@
 from app.database import get_db
-from app.models import Set as SetModel, Card as CardModel, CardProgress
+from app.models import Set as SetModel, Card as CardModel, CardProgress, ReviewQuality
 from app.schemas import (
     Set, SetCreate, SetListItem, Card,
-    StudySessionResponse, CardWithProgress, StudySessionStats
+    StudySessionResponse, CardWithProgress, StudySessionStats,
+    ReviewInput, CardProgressResponse
 )
+from app.services import SpacedRepetitionService
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -235,3 +237,48 @@ async def get_study_sr_cards(set_id: int, db: Session = Depends(get_db)):
     )
 
     return StudySessionResponse(cards=cards_with_progress, stats=stats)
+
+
+@router.post("/review", response_model=CardProgressResponse)
+async def submit_review(review: ReviewInput, db: Session = Depends(get_db)):
+    """
+    Submit a review for a card and update its progress using SM-2 algorithm.
+    """
+    # Check if card exists
+    card = db.query(CardModel).filter(CardModel.id == review.card_id).first()
+
+    if not card:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Card with id {review.card_id} not found"
+        )
+
+    # Get or create progress
+    progress = card.progress
+    if progress is None:
+        progress = CardProgress(
+            card_id=card.id,
+            ease_factor=2.5,
+            interval_days=0,
+            repetitions=0,
+            lapses=0
+        )
+        db.add(progress)
+        db.flush()
+
+    # Convert quality string to enum
+    quality_map = {
+        "again": ReviewQuality.AGAIN,
+        "hard": ReviewQuality.HARD,
+        "good": ReviewQuality.GOOD,
+        "easy": ReviewQuality.EASY
+    }
+    quality_enum = quality_map[review.quality.value]
+
+    # Calculate next review using SM-2 algorithm
+    updated_progress = SpacedRepetitionService.calculate_next_review(progress, quality_enum)
+
+    db.commit()
+    db.refresh(updated_progress)
+
+    return updated_progress
