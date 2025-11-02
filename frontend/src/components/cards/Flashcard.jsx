@@ -39,7 +39,7 @@ const Flashcard = ({ card, flipTrigger, onFlipChange }) => {
             {card.term}
           </div>
           <p className="flashcard-hint">
-            Kliknij, aby zobaczyć definicję
+            Kliknij lub naciśnij Spację, aby zobaczyć definicję
           </p>
         </div>
         <div className="flashcard-face flashcard-back">
@@ -48,7 +48,7 @@ const Flashcard = ({ card, flipTrigger, onFlipChange }) => {
             {card.definition}
           </div>
           <p className="flashcard-hint">
-            Kliknij, aby wrócić
+            Kliknij lub naciśnij Spację, aby wrócić
           </p>
         </div>
       </div>
