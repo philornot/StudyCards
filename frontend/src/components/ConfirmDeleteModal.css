@@ -1,0 +1,33 @@
+.confirm-delete-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.confirm-delete-icon {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.confirm-delete-message {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.confirm-delete-warning {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  color: var(--color-danger);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}
+
+.confirm-delete-item-name {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
