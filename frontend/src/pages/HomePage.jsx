@@ -4,6 +4,8 @@ import Navbar from '../components/Navbar';
 import SetCard from '../components/SetCard';
 import EmptyState from '../components/EmptyState';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import Toast from '../components/ui/Toast';
 import Button from '../components/ui/Button';
 import { setsApi } from '../services/api';
 import './HomePage.css';
@@ -13,6 +15,10 @@ const HomePage = () => {
   const [sets, setSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [setToDelete, setSetToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     fetchSets();
@@ -29,6 +35,46 @@ const HomePage = () => {
       console.error('Error fetching sets:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (set) => {
+    setSetToDelete(set);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!setToDelete) return;
+
+    try {
+      setDeleting(true);
+      await setsApi.delete(setToDelete.id);
+
+      // Remove set from list without reloading
+      setSets(sets.filter(s => s.id !== setToDelete.id));
+
+      setShowDeleteModal(false);
+      setSetToDelete(null);
+      setToast({
+        type: 'success',
+        message: `Zestaw "${setToDelete.title}" został usunięty`
+      });
+    } catch (err) {
+      console.error('Error deleting set:', err);
+      setShowDeleteModal(false);
+      setToast({
+        type: 'error',
+        message: 'Nie udało się usunąć zestawu. Spróbuj ponownie.'
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    if (!deleting) {
+      setShowDeleteModal(false);
+      setSetToDelete(null);
     }
   };
 
@@ -79,12 +125,36 @@ const HomePage = () => {
           ) : (
             <div className="sets-grid">
               {sets.map((set) => (
-                <SetCard key={set.id} set={set} />
+                <SetCard
+                  key={set.id}
+                  set={set}
+                  onDelete={handleDeleteClick}
+                />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {setToDelete && (
+        <ConfirmDeleteModal
+          isOpen={showDeleteModal}
+          onClose={handleCloseModal}
+          onConfirm={handleDeleteConfirm}
+          itemName={setToDelete.title}
+          loading={deleting}
+        />
+      )}
+
+      {toast && (
+        <div className="toast-container">
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
     </>
   );
 };

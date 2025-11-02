@@ -3,6 +3,33 @@
   flex-direction: column;
   gap: var(--spacing-md);
   height: 100%;
+  position: relative;
+}
+
+.set-card-delete-btn {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.set-card-delete-btn:hover {
+  background-color: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
+  transform: scale(1.1);
 }
 
 .set-card-header {
@@ -10,6 +37,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--spacing-md);
+  padding-right: var(--spacing-xl);
 }
 
 .set-card-title {
