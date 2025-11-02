@@ -14,6 +14,7 @@ export const setsApi = {
   getById: (id) => apiClient.get(`/sets/${id}`),
   create: (data) => apiClient.post('/sets', data),
   update: (id, data) => apiClient.put(`/sets/${id}`, data),
+  delete: (id) => apiClient.delete(`/sets/${id}`),
 };
 
 export default apiClient;

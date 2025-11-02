@@ -4,6 +4,8 @@ import Navbar from '../components/Navbar';
 import Button from '../components/ui/Button';
 import CardListItem from '../components/CardListItem';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import Toast from '../components/ui/Toast';
 import { setsApi } from '../services/api';
 import './SetDetailsPage.css';
 
@@ -13,6 +15,9 @@ const SetDetailsPage = () => {
   const [set, setSet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     fetchSet();
@@ -33,6 +38,27 @@ const SetDetailsPage = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+      await setsApi.delete(id);
+      setShowDeleteModal(false);
+      setToast({ type: 'success', message: 'Zestaw został pomyślnie usunięty' });
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    } catch (err) {
+      console.error('Error deleting set:', err);
+      setShowDeleteModal(false);
+      setToast({
+        type: 'error',
+        message: 'Nie udało się usunąć zestawu. Spróbuj ponownie.'
+      });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -127,7 +153,7 @@ const SetDetailsPage = () => {
               </Button>
               <Button
                 variant="danger"
-                onClick={() => {/* TODO: SC-29 */}}
+                onClick={() => setShowDeleteModal(true)}
               >
                 🗑️ Usuń
               </Button>
@@ -148,6 +174,24 @@ const SetDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        itemName={set.title}
+        loading={deleting}
+      />
+
+      {toast && (
+        <div className="toast-container">
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
     </>
   );
 };
