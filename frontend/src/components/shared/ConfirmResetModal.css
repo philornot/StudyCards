@@ -1,0 +1,28 @@
+.confirm-reset-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.confirm-reset-icon {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.confirm-reset-message {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.confirm-reset-warning {
+  background-color: rgba(249, 115, 22, 0.1);
+  border: 1px solid #f97316;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  color: #ea580c;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}

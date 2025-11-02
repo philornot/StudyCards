@@ -18,6 +18,7 @@ export const setsApi = {
   getStudyCards: (id) => apiClient.get(`/sets/${id}/study`),
   getSpacedRepetitionCards: (id) => apiClient.get(`/sets/${id}/study-sr`),
   getStats: (id) => apiClient.get(`/sets/${id}/stats`),
+  resetProgress: (id) => apiClient.post(`/sets/${id}/reset-progress`),
 };
 
 export const studyApi = {

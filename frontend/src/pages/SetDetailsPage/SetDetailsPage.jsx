@@ -9,6 +9,7 @@ import Toast from "../../components/ui/Toast.jsx";
 import ProgressDashboard from "../../components/stats/ProgressDashboard.jsx";
 import { setsApi } from "../../services/api.js";
 import "./SetDetailsPage.css";
+import ConfirmResetModal from "../../components/shared/ConfirmResetModal.jsx";
 
 const SetDetailsPage = () => {
   const { id } = useParams();
@@ -21,6 +22,8 @@ const SetDetailsPage = () => {
   const [toast, setToast] = useState(null);
   const [srStats, setSrStats] = useState(null);
   const [loadingSrStats, setLoadingSrStats] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     fetchSet();
@@ -79,6 +82,33 @@ const SetDetailsPage = () => {
       });
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleResetProgress = async () => {
+    try {
+      setResetting(true);
+      await setsApi.resetProgress(id);
+      setShowResetModal(false);
+      setToast({
+        type: "success",
+        message: "Postęp został zresetowany",
+      });
+      // Refresh stats and set data
+      setTimeout(() => {
+        fetchSet();
+        fetchSrStats();
+        window.location.reload(); // Force refresh to update ProgressDashboard
+      }, 1000);
+    } catch (err) {
+      console.error("Error resetting progress:", err);
+      setShowResetModal(false);
+      setToast({
+        type: "error",
+        message: "Nie udało się zresetować postępu. Spróbuj ponownie.",
+      });
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -204,6 +234,13 @@ const SetDetailsPage = () => {
               <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
                 🗑️ Usuń
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowResetModal(true)}
+                title="Zresetuj postęp nauki"
+              >
+                🔄 Resetuj postęp
+              </Button>
             </div>
           </div>
 
@@ -229,6 +266,13 @@ const SetDetailsPage = () => {
         onConfirm={handleDelete}
         itemName={set.title}
         loading={deleting}
+      />
+
+      <ConfirmResetModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={handleResetProgress}
+        loading={resetting}
       />
 
       {toast && (
