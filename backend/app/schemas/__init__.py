@@ -35,7 +35,7 @@ class CardProgressResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class Card(CardBase):
+class Card(CardBase): 
     id: int
     set_id: int
     progress: Optional[CardProgressResponse] = None
