@@ -1,11 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Flashcard.css';
 
-const Flashcard = ({ card }) => {
+const Flashcard = ({ card, externalFlip, onFlip }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
+  useEffect(() => {
+    setIsFlipped(false);
+  }, [card.id]);
+
+  useEffect(() => {
+    if (externalFlip !== undefined) {
+      setIsFlipped(externalFlip);
+    }
+  }, [externalFlip]);
+
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    const newFlipState = !isFlipped;
+    setIsFlipped(newFlipState);
+    if (onFlip) {
+      onFlip(newFlipState);
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Flashcard from '../components/Flashcard';
@@ -16,10 +16,51 @@ const FlashcardsPage = () => {
   const [error, setError] = useState(null);
   const [setTitle, setSetTitle] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const flashcardRef = useRef(null);
 
   useEffect(() => {
     fetchCards();
   }, [id]);
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Don't handle keys if we're in an input field
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      // Don't handle keys on completion screen
+      if (isCompleted) {
+        return;
+      }
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          handleFlip();
+          break;
+        case 'ArrowRight':
+        case 'Enter':
+          e.preventDefault();
+          handleNext();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          handlePrevious();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          handleExit();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentIndex, cards.length, isCompleted, isFlipped]);
 
   const fetchCards = async () => {
     try {
@@ -35,6 +76,7 @@ const FlashcardsPage = () => {
       setCards(cardsResponse.data);
       setCurrentIndex(0);
       setIsCompleted(false);
+      setIsFlipped(false);
     } catch (err) {
       console.error('Error fetching cards:', err);
       if (err.response?.status === 404) {
@@ -47,9 +89,14 @@ const FlashcardsPage = () => {
     }
   };
 
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
+  };
+
   const handleNext = () => {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
+      setIsFlipped(false);
     } else {
       setIsCompleted(true);
     }
@@ -58,6 +105,7 @@ const FlashcardsPage = () => {
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
+      setIsFlipped(false);
     }
   };
 
@@ -68,6 +116,7 @@ const FlashcardsPage = () => {
   const handleRestart = () => {
     setCurrentIndex(0);
     setIsCompleted(false);
+    setIsFlipped(false);
   };
 
   const handleExit = () => {
@@ -186,7 +235,15 @@ const FlashcardsPage = () => {
               </div>
             </div>
 
-            <Flashcard card={currentCard} key={currentCard.id} />
+            <Flashcard
+              card={currentCard}
+              key={`${currentCard.id}-${currentIndex}`}
+              onFlip={(flipped) => setIsFlipped(flipped)}
+            />
+
+            <div className="side-indicator">
+              {isFlipped ? 'Definicja (tył)' : 'Pojęcie (przód)'} • Spacja - odwróć
+            </div>
 
             <div className="navigation-controls">
               <Button
@@ -203,6 +260,15 @@ const FlashcardsPage = () => {
               >
                 {currentIndex === cards.length - 1 ? 'Zakończ' : 'Następna →'}
               </Button>
+            </div>
+
+            <div className="keyboard-hints" style={{
+              textAlign: 'center',
+              marginTop: 'var(--spacing-lg)',
+              color: 'var(--color-text-muted)',
+              fontSize: 'var(--font-size-sm)'
+            }}>
+              Klawisze: <strong>Spacja</strong> - odwróć | <strong>←</strong> poprzednia | <strong>→ / Enter</strong> następna | <strong>Esc</strong> - wyjdź
             </div>
           </div>
         </div>
