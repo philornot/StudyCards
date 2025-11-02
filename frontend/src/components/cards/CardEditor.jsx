@@ -1,6 +1,6 @@
-import Input from './ui/Input';
-import Textarea from './ui/Textarea';
-import Button from './ui/Button';
+import Input from '../ui/Input.jsx';
+import Textarea from '../ui/Textarea.jsx';
+import Button from '../ui/Button.jsx';
 import './CardEditor.css';
 
 const CardEditor = ({ card, index, onUpdate, onRemove, canRemove, error }) => {

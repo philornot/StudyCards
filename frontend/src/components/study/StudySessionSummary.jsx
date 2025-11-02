@@ -1,4 +1,4 @@
-import Button from './ui/Button';
+import Button from '../ui/Button.jsx';
 import './StudySessionSummary.css';
 
 const StudySessionSummary = ({

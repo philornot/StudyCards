@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Button from "../components/ui/Button";
-import CardListItem from "../components/CardListItem";
-import LoadingSpinner from "../components/LoadingSpinner";
-import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-import Toast from "../components/ui/Toast";
-import { setsApi } from "../services/api";
+import Navbar from "../../components/layout/Navbar.jsx";
+import Button from "../../components/ui/Button.jsx";
+import CardListItem from "../../components/cards/CardListItem.jsx";
+import LoadingSpinner from "../../components/shared/LoadingSpinner.jsx";
+import ConfirmDeleteModal from "../../components/shared/ConfirmDeleteModal.jsx";
+import Toast from "../../components/ui/Toast.jsx";
+import { setsApi } from "../../services/api.js";
 import "./SetDetailsPage.css";
 
 const SetDetailsPage = () => {

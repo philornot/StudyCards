@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Flashcard from '../components/Flashcard';
-import Button from '../components/ui/Button';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { setsApi } from '../services/api';
+import Navbar from '../../components/layout/Navbar.jsx';
+import Flashcard from '../../components/cards/Flashcard.jsx';
+import Button from '../../components/ui/Button.jsx';
+import LoadingSpinner from '../../components/shared/LoadingSpinner.jsx';
+import { setsApi } from '../../services/api.js';
 import './FlashcardsPage.css';
 
 const FlashcardsPage = () => {

@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import CreateSetPage from './pages/CreateSetPage';
-import SetDetailsPage from './pages/SetDetailsPage';
-import EditSetPage from './pages/EditSetPage';
-import FlashcardsPage from './pages/FlashcardsPage';
-import StudyPage from './pages/StudyPage';
+import HomePage from './pages/HomePage/HomePage.jsx';
+import CreateSetPage from './pages/CreateSetPage/CreateSetPage.jsx';
+import SetDetailsPage from './pages/SetDetailsPage/SetDetailsPage.jsx';
+import EditSetPage from './pages/EditSetPage/EditSetPage.jsx';
+import FlashcardsPage from './pages/FlashcardsPage/FlashcardsPage.jsx';
+import StudyPage from './pages/StudyPage/StudyPage.jsx';
 
 function App() {
   return (

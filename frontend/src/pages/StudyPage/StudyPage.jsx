@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Flashcard from '../components/Flashcard';
-import ReviewButtons from '../components/ReviewButtons';
-import StudySessionSummary from '../components/StudySessionSummary';
-import Button from '../components/ui/Button';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { setsApi, studyApi } from '../services/api';
+import Navbar from '../../components/layout/Navbar.jsx';
+import Flashcard from '../../components/cards/Flashcard.jsx';
+import ReviewButtons from '../../components/study/ReviewButtons.jsx';
+import StudySessionSummary from '../../components/study/StudySessionSummary.jsx';
+import Button from '../../components/ui/Button.jsx';
+import LoadingSpinner from '../../components/shared/LoadingSpinner.jsx';
+import { setsApi, studyApi } from '../../services/api.js';
 import './StudyPage.css';
-import KeyboardHints from '../components/KeyboardHints';
+import KeyboardHints from '../../components/study/KeyboardHints.jsx';
 
 const StudyPage = () => {
   const { id } = useParams();

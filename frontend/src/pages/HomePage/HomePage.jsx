@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import SetCard from '../components/SetCard';
-import EmptyState from '../components/EmptyState';
-import LoadingSpinner from '../components/LoadingSpinner';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import Toast from '../components/ui/Toast';
-import Button from '../components/ui/Button';
-import { setsApi } from '../services/api';
+import Navbar from '../../components/layout/Navbar.jsx';
+import SetCard from '../../components/cards/SetCard.jsx';
+import EmptyState from '../../components/shared/EmptyState.jsx';
+import LoadingSpinner from '../../components/shared/LoadingSpinner.jsx';
+import ConfirmDeleteModal from '../../components/shared/ConfirmDeleteModal.jsx';
+import Toast from '../../components/ui/Toast.jsx';
+import Button from '../../components/ui/Button.jsx';
+import { setsApi } from '../../services/api.js';
 import './HomePage.css';
 
 const HomePage = () => {

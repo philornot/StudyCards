@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Input from '../components/ui/Input';
-import Textarea from '../components/ui/Textarea';
-import Button from '../components/ui/Button';
-import CardEditor from '../components/CardEditor';
-import { setsApi } from '../services/api';
+import Navbar from '../../components/layout/Navbar.jsx';
+import Input from '../../components/ui/Input.jsx';
+import Textarea from '../../components/ui/Textarea.jsx';
+import Button from '../../components/ui/Button.jsx';
+import CardEditor from '../../components/cards/CardEditor.jsx';
+import { setsApi } from '../../services/api.js';
 import './CreateSetPage.css';
 
 const CreateSetPage = () => {

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Input from '../components/ui/Input';
-import Textarea from '../components/ui/Textarea';
-import Button from '../components/ui/Button';
-import CardEditor from '../components/CardEditor';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { setsApi } from '../services/api';
+import Navbar from '../../components/layout/Navbar.jsx';
+import Input from '../../components/ui/Input.jsx';
+import Textarea from '../../components/ui/Textarea.jsx';
+import Button from '../../components/ui/Button.jsx';
+import CardEditor from '../../components/cards/CardEditor.jsx';
+import LoadingSpinner from '../../components/shared/LoadingSpinner.jsx';
+import { setsApi } from '../../services/api.js';
 import './EditSetPage.css';
 
 const EditSetPage = () => {
