@@ -9,6 +9,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
+  min-height: 44px; /* Touch-friendly minimum */
+  min-width: 44px;
 }
 
 .btn:disabled {

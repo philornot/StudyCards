@@ -29,3 +29,29 @@ body {
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
 }
+
+/* Responsive container padding */
+@media (max-width: 768px) {
+  .container,
+  .container-narrow {
+    padding: 0 var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .container,
+  .container-narrow {
+    padding: 0 var(--spacing-sm);
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    min-height: 44px;
+  }
+}
