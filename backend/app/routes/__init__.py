@@ -103,3 +103,20 @@ async def update_set(set_id: int, set_data: SetCreate, db: Session = Depends(get
     db.refresh(set_obj)
 
     return set_obj
+
+
+@router.delete("/sets/{set_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_set(set_id: int, db: Session = Depends(get_db)):
+    """Delete a set and all its cards"""
+    set_obj = db.query(SetModel).filter(SetModel.id == set_id).first()
+
+    if not set_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Set with id {set_id} not found"
+        )
+
+    db.delete(set_obj)
+    db.commit()
+
+    return None
