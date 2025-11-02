@@ -2,9 +2,9 @@ name: E2E Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, dev ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, dev ]
 
 jobs:
   test:
@@ -31,7 +31,7 @@ jobs:
 
     - name: Install frontend dependencies
       working-directory: ./frontend
-      run: npm ci
+      run: pnpm ci
 
     - name: Install Playwright Browsers
       working-directory: ./frontend
@@ -43,7 +43,7 @@ jobs:
 
     - name: Run E2E tests
       working-directory: ./frontend
-      run: npm run test:e2e
+      run: pnpm run test:e2e
 
     - uses: actions/upload-artifact@v3
       if: always()
