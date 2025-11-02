@@ -17,7 +17,7 @@ const FlashcardsPage = () => {
   const [setTitle, setSetTitle] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
-  const flashcardRef = useRef(null);
+  const [flipTrigger, setFlipTrigger] = useState(0);
 
   useEffect(() => {
     fetchCards();
@@ -60,7 +60,7 @@ const FlashcardsPage = () => {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentIndex, cards.length, isCompleted, isFlipped]);
+  }, [currentIndex, cards.length, isCompleted]);
 
   const fetchCards = async () => {
     try {
@@ -90,7 +90,7 @@ const FlashcardsPage = () => {
   };
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    setFlipTrigger(prev => prev + 1);
   };
 
   const handleNext = () => {
@@ -238,7 +238,8 @@ const FlashcardsPage = () => {
             <Flashcard
               card={currentCard}
               key={`${currentCard.id}-${currentIndex}`}
-              onFlip={(flipped) => setIsFlipped(flipped)}
+              flipTrigger={flipTrigger}
+              onFlipChange={(flipped) => setIsFlipped(flipped)}
             />
 
             <div className="side-indicator">

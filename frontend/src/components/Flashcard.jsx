@@ -1,24 +1,29 @@
 import { useState, useEffect } from 'react';
 import './Flashcard.css';
 
-const Flashcard = ({ card, externalFlip, onFlip }) => {
+const Flashcard = ({ card, flipTrigger, onFlipChange }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
+  // Reset flip state when card changes
   useEffect(() => {
     setIsFlipped(false);
+    if (onFlipChange) {
+      onFlipChange(false);
+    }
   }, [card.id]);
 
+  // Handle external flip trigger (e.g., from keyboard)
   useEffect(() => {
-    if (externalFlip !== undefined) {
-      setIsFlipped(externalFlip);
+    if (flipTrigger > 0) {
+      handleFlip();
     }
-  }, [externalFlip]);
+  }, [flipTrigger]);
 
   const handleFlip = () => {
     const newFlipState = !isFlipped;
     setIsFlipped(newFlipState);
-    if (onFlip) {
-      onFlip(newFlipState);
+    if (onFlipChange) {
+      onFlipChange(newFlipState);
     }
   };
 
