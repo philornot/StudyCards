@@ -1,6 +1,14 @@
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 from typing import Optional
+from enum import Enum
+
+
+class ReviewQualityEnum(str, Enum):
+    AGAIN = "again"
+    HARD = "hard"
+    GOOD = "good"
+    EASY = "easy"
 
 
 class CardBase(BaseModel):
@@ -18,6 +26,42 @@ class Card(CardBase):
     set_id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CardProgressResponse(BaseModel):
+    id: int
+    card_id: int
+    ease_factor: float
+    interval_days: int
+    repetitions: int
+    lapses: int
+    last_reviewed: Optional[datetime]
+    next_review: Optional[datetime]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CardWithProgress(Card):
+    progress: Optional[CardProgressResponse] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ReviewInput(BaseModel):
+    card_id: int
+    quality: ReviewQualityEnum
+
+
+class StudySessionStats(BaseModel):
+    total_cards: int
+    new_cards: int
+    review_cards: int
+    overdue_cards: int
+
+
+class StudySessionResponse(BaseModel):
+    cards: list[CardWithProgress]
+    stats: StudySessionStats
 
 
 class SetBase(BaseModel):
