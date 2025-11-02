@@ -17,6 +17,7 @@ export const setsApi = {
   delete: (id) => apiClient.delete(`/sets/${id}`),
   getStudyCards: (id) => apiClient.get(`/sets/${id}/study`),
   getSpacedRepetitionCards: (id) => apiClient.get(`/sets/${id}/study-sr`),
+  getStats: (id) => apiClient.get(`/sets/${id}/stats`),
 };
 
 export const studyApi = {

@@ -6,6 +6,7 @@ import CardListItem from "../../components/cards/CardListItem.jsx";
 import LoadingSpinner from "../../components/shared/LoadingSpinner.jsx";
 import ConfirmDeleteModal from "../../components/shared/ConfirmDeleteModal.jsx";
 import Toast from "../../components/ui/Toast.jsx";
+import ProgressDashboard from "../../components/stats/ProgressDashboard.jsx";
 import { setsApi } from "../../services/api.js";
 import "./SetDetailsPage.css";
 
@@ -138,6 +139,8 @@ const SetDetailsPage = () => {
           >
             ← Powrót
           </Button>
+
+            <ProgressDashboard setId={id} />
 
           <div className="set-header">
             <div className="set-info">
