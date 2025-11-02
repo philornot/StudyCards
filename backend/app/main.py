@@ -7,18 +7,24 @@ settings = get_settings()
 
 app = FastAPI(title=settings.app_name)
 
-# CORS configuration
+# CORS configuration — używaj zmiennej środowiskowej
+allowed_origins = [
+    settings.frontend_url,  # Z .env
+]
+
+# W development dodaj również inne porty
+if "localhost" in settings.frontend_url:
+    allowed_origins.extend([
+        "http://localhost:4173",  # Vite preview
+        "http://localhost:3000",  # Alternatywny port
+    ])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://studycards43.netlify.app",  # Twoja domena Netlify
-        "http://localhost:5173",              # Development
-        "http://localhost:4173",              # Build preview
-        "http://localhost:3000",              # Alternatywny port dev
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Pozwól na wszystkie metody (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Pozwól na wszystkie nagłówki
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(router)

@@ -5,6 +5,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     app_name: str = "Study Cards API"
     database_url: str = "sqlite:///./studycards.db"
+    frontend_url: str = "http://localhost:5173"
 
     model_config = SettingsConfigDict(env_file=".env")
 
