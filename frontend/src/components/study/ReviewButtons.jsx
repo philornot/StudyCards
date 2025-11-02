@@ -4,28 +4,28 @@ const ReviewButtons = ({ onReview, disabled = false, intervals = null }) => {
   const buttons = [
     {
       quality: 'again',
-      label: 'Again',
+      label: 'Nie pamiętam',
       keys: ['1', 'Z'],
       className: 'review-button-again',
       title: 'Zupełnie nie pamiętam - zacznij od nowa'
     },
     {
       quality: 'hard',
-      label: 'Hard',
+      label: 'Trudne',
       keys: ['2', 'X'],
       className: 'review-button-hard',
       title: 'Trudne - pamiętam z trudem'
     },
     {
       quality: 'good',
-      label: 'Good',
+      label: 'Dobrze',
       keys: ['3', 'C'],
       className: 'review-button-good',
       title: 'Dobrze - pamiętam po chwili zastanowienia'
     },
     {
       quality: 'easy',
-      label: 'Easy',
+      label: 'Łatwo',
       keys: ['4', 'V'],
       className: 'review-button-easy',
       title: 'Łatwo - pamiętam od razu'
@@ -67,12 +67,10 @@ const ReviewButtons = ({ onReview, disabled = false, intervals = null }) => {
           title={button.title}
           aria-label={`${button.label} - ${button.title}`}
         >
-          <div className="review-button-content">
-            <span className="review-button-label">{button.label}</span>
-            <span className="review-button-interval">
-              {formatInterval(button.quality)}
-            </span>
-          </div>
+          <span className="review-button-label">{button.label}</span>
+          <span className="review-button-interval">
+            {formatInterval(button.quality)}
+          </span>
           <span className="review-button-key">
             {button.keys.join(' / ')}
           </span>
