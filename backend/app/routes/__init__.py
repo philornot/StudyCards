@@ -11,7 +11,7 @@ from app.schemas import (
 from app.services import SpacedRepetitionService
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 router = APIRouter(prefix="/api", tags=["sets"])
 
