@@ -228,3 +228,88 @@ def test_update_nonexistent_set(client):
     }
     response = client.put("/api/sets/999", json=updated_data)
     assert response.status_code == 404
+
+
+def test_delete_set_success(client):
+    """Test successful deletion of a set"""
+    # Create a set
+    set_data = {
+        "title": "Set to Delete",
+        "description": "This will be deleted",
+        "cards": [
+            {"term": "Card 1", "definition": "Def 1", "order": 0},
+            {"term": "Card 2", "definition": "Def 2", "order": 1}
+        ]
+    }
+    create_response = client.post("/api/sets", json=set_data)
+    set_id = create_response.json()["id"]
+
+    # Delete the set
+    response = client.delete(f"/api/sets/{set_id}")
+    assert response.status_code == 204
+
+    # Verify set is deleted
+    get_response = client.get(f"/api/sets/{set_id}")
+    assert get_response.status_code == 404
+
+
+def test_delete_set_cascade_deletes_cards(client):
+    """Test that deleting a set also deletes all its cards"""
+    # Create a set with cards
+    set_data = {
+        "title": "Set with Cards",
+        "cards": [
+            {"term": "Card 1", "definition": "Def 1", "order": 0},
+            {"term": "Card 2", "definition": "Def 2", "order": 1},
+            {"term": "Card 3", "definition": "Def 3", "order": 2}
+        ]
+    }
+    create_response = client.post("/api/sets", json=set_data)
+    set_id = create_response.json()["id"]
+
+    # Delete the set
+    delete_response = client.delete(f"/api/sets/{set_id}")
+    assert delete_response.status_code == 204
+
+    # Verify the set cannot be retrieved
+    get_response = client.get(f"/api/sets/{set_id}")
+    assert get_response.status_code == 404
+
+
+def test_delete_nonexistent_set(client):
+    """Test deleting a set that doesn't exist"""
+    response = client.delete("/api/sets/999")
+    assert response.status_code == 404
+
+
+def test_delete_set_not_in_list(client):
+    """Test that deleted set doesn't appear in list"""
+    # Create two sets
+    set_data_1 = {
+        "title": "Set 1",
+        "cards": [{"term": "A", "definition": "B", "order": 0}]
+    }
+    set_data_2 = {
+        "title": "Set 2",
+        "cards": [{"term": "C", "definition": "D", "order": 0}]
+    }
+
+    response_1 = client.post("/api/sets", json=set_data_1)
+    set_id_1 = response_1.json()["id"]
+
+    response_2 = client.post("/api/sets", json=set_data_2)
+    set_id_2 = response_2.json()["id"]
+
+    # Get list before deletion
+    list_response = client.get("/api/sets")
+    assert len(list_response.json()) == 2
+
+    # Delete first set
+    client.delete(f"/api/sets/{set_id_1}")
+
+    # Get list after deletion
+    list_response = client.get("/api/sets")
+    sets = list_response.json()
+    assert len(sets) == 1
+    assert sets[0]["id"] == set_id_2
+    assert sets[0]["title"] == "Set 2"
