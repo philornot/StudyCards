@@ -1,3 +1,6 @@
+import random
+from datetime import datetime, timedelta
+
 from app.database import get_db
 from app.models import Set as SetModel, Card as CardModel, CardProgress, ReviewQuality
 from app.schemas import (
@@ -9,8 +12,6 @@ from app.services import SpacedRepetitionService
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from datetime import datetime, date, timedelta
-import random
 
 router = APIRouter(prefix="/api", tags=["sets"])
 
@@ -24,7 +25,7 @@ async def get_sets(db: Session = Depends(get_db)):
         SetModel.description,
         SetModel.created_at,
         func.count(CardModel.id).label("card_count")
-    ).outerjoin(CardModel).group_by(SetModel.id).order_by(SetModel.id.desc()).all()
+    ).outerjoin(CardModel).group_by(SetModel.id).order_by(SetModel.created_at.desc()).all()
 
     return [
         SetListItem(
@@ -66,7 +67,9 @@ async def create_set(set_data: SetCreate, db: Session = Depends(get_db)):
 @router.get("/sets/{set_id}", response_model=Set)
 async def get_set(set_id: int, db: Session = Depends(get_db)):
     """Get a specific set with all its cards"""
-    set_obj = db.query(SetModel).filter(SetModel.id == set_id).first()
+    set_obj = db.query(SetModel).options(
+        joinedload(SetModel.cards)
+    ).filter(SetModel.id == set_id).first()
 
     if not set_obj:
         raise HTTPException(
@@ -169,8 +172,10 @@ async def get_study_sr_cards(set_id: int, db: Session = Depends(get_db)):
     today = datetime.now().date()
     new_cards_limit = 20
 
-    # Get all cards with their progress
-    cards = db.query(CardModel).filter(CardModel.set_id == set_id).all()
+    # Get all cards with their progress in one query using eager loading
+    cards = db.query(CardModel).options(
+        joinedload(CardModel.progress)
+    ).filter(CardModel.set_id == set_id).all()
 
     # Categorize cards
     overdue_cards = []
@@ -399,6 +404,7 @@ async def get_set_stats(set_id: int, db: Session = Depends(get_db)):
         current_streak=current_streak,
         accuracy=round(accuracy, 1)
     )
+
 
 @router.post("/sets/{set_id}/reset-progress", status_code=status.HTTP_204_NO_CONTENT)
 async def reset_set_progress(set_id: int, db: Session = Depends(get_db)):
