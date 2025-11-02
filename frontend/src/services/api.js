@@ -16,6 +16,11 @@ export const setsApi = {
   update: (id, data) => apiClient.put(`/sets/${id}`, data),
   delete: (id) => apiClient.delete(`/sets/${id}`),
   getStudyCards: (id) => apiClient.get(`/sets/${id}/study`),
+  getSpacedRepetitionCards: (id) => apiClient.get(`/sets/${id}/study-sr`),
+};
+
+export const studyApi = {
+  submitReview: (cardId, quality) => apiClient.post('/review', { card_id: cardId, quality }),
 };
 
 export default apiClient;
