@@ -18,10 +18,13 @@ jobs:
       with:
         python-version: '3.12'
 
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
+        cache: pnpm
 
     - name: Install backend dependencies
       working-directory: ./backend
@@ -31,7 +34,7 @@ jobs:
 
     - name: Install frontend dependencies
       working-directory: ./frontend
-      run: pnpm ci
+      run: pnpm install --frozen-lockfile
 
     - name: Install Playwright Browsers
       working-directory: ./frontend
