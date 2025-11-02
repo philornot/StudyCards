@@ -27,3 +27,4 @@
 /frontend/*.njsproj
 /frontend/*.sln
 /frontend/*.sw?
+/backend/.env
