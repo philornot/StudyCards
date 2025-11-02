@@ -13,6 +13,7 @@ export const setsApi = {
   getAll: () => apiClient.get('/sets'),
   getById: (id) => apiClient.get(`/sets/${id}`),
   create: (data) => apiClient.post('/sets', data),
+  update: (id, data) => apiClient.put(`/sets/${id}`, data),
 };
 
 export default apiClient;
