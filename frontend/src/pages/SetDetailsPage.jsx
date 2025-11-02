@@ -120,7 +120,7 @@ const SetDetailsPage = () => {
                 🧠 Ucz się (Spaced Repetition)
               </Button>
               <Button
-                variant="secondary"
+                variant="outline"
                 onClick={() => navigate(`/sets/${id}/edit`)}
               >
                 ✏️ Edytuj
