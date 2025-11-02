@@ -84,9 +84,7 @@
 }
 
 .review-button-key {
-  font-size: var(--font-size-xs);
-  opacity: 0.5;
-  text-align: center;
+  display: none; /* Ukryte - użytkownik nie potrzebuje tej informacji */
 }
 
 @media (max-width: 768px) {
@@ -108,9 +106,5 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-xs);
-  }
-
-  .review-button-key {
-    align-self: center;
   }
 }

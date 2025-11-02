@@ -71,9 +71,6 @@ const ReviewButtons = ({ onReview, disabled = false, intervals = null }) => {
           <span className="review-button-interval">
             {formatInterval(button.quality)}
           </span>
-          <span className="review-button-key">
-            {button.keys.join(' / ')}
-          </span>
         </button>
       ))}
     </div>
