@@ -1,9 +1,10 @@
 from app.database import get_db
 from app.models import Set as SetModel, Card as CardModel
-from app.schemas import Set, SetCreate, SetListItem
+from app.schemas import Set, SetCreate, SetListItem, Card
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+import random
 
 router = APIRouter(prefix="/api", tags=["sets"])
 
@@ -68,6 +69,28 @@ async def get_set(set_id: int, db: Session = Depends(get_db)):
         )
 
     return set_obj
+
+
+@router.get("/sets/{set_id}/study", response_model=list[Card])
+async def get_study_cards(set_id: int, db: Session = Depends(get_db)):
+    """Get cards from a set in random order for studying"""
+    # Check if set exists
+    set_obj = db.query(SetModel).filter(SetModel.id == set_id).first()
+
+    if not set_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Set with id {set_id} not found"
+        )
+
+    # Get all cards from the set
+    cards = db.query(CardModel).filter(CardModel.set_id == set_id).all()
+
+    # Shuffle cards randomly
+    cards_list = list(cards)
+    random.shuffle(cards_list)
+
+    return cards_list
 
 
 @router.put("/sets/{set_id}", response_model=Set)
