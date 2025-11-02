@@ -1,12 +1,15 @@
 [build]
   base = "frontend"
-  command = "npm install && npm run build"
+  command = "npx pnpm install && npx pnpm run build"
   publish = "dist"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[plugins]]
+  package = "netlify-plugin-pnpm"
 
 [build.environment]
   NODE_VERSION = "18"
