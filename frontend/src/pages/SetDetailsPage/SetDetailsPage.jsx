@@ -27,7 +27,6 @@ const SetDetailsPage = () => {
 
   useEffect(() => {
     fetchSet();
-    fetchSrStats();
   }, [id]);
 
   const fetchSet = async () => {
@@ -45,19 +44,6 @@ const SetDetailsPage = () => {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchSrStats = async () => {
-    try {
-      setLoadingSrStats(true);
-      const response = await setsApi.getSpacedRepetitionCards(id);
-      setSrStats(response.data.stats);
-    } catch (err) {
-      console.error("Error fetching SR stats:", err);
-      setSrStats(null);
-    } finally {
-      setLoadingSrStats(false);
     }
   };
 
@@ -87,7 +73,6 @@ const SetDetailsPage = () => {
       success("Postęp został zresetowany");
       setTimeout(() => {
         fetchSet();
-        fetchSrStats();
         window.location.reload();
       }, 1000);
     } catch (err) {
