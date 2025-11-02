@@ -399,3 +399,28 @@ async def get_set_stats(set_id: int, db: Session = Depends(get_db)):
         current_streak=current_streak,
         accuracy=round(accuracy, 1)
     )
+
+@router.post("/sets/{set_id}/reset-progress", status_code=status.HTTP_204_NO_CONTENT)
+async def reset_set_progress(set_id: int, db: Session = Depends(get_db)):
+    """
+    Reset learning progress for all cards in a set.
+    Deletes all CardProgress records for the set's cards.
+    """
+    # Check if set exists
+    set_obj = db.query(SetModel).filter(SetModel.id == set_id).first()
+
+    if not set_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Set with id {set_id} not found"
+        )
+
+    # Get all card IDs from this set
+    card_ids = [card.id for card in set_obj.cards]
+
+    # Delete all progress records for these cards
+    if card_ids:
+        db.query(CardProgress).filter(CardProgress.card_id.in_(card_ids)).delete(synchronize_session=False)
+        db.commit()
+
+    return None
