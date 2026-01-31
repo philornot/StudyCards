@@ -43,8 +43,7 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: pnpm install --frozen-lockfile
+        run: cd frontend && pnpm install --frozen-lockfile
 
       - name: Install Playwright Browsers
         working-directory: ./frontend
